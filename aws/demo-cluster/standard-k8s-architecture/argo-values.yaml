@@ -1,0 +1,75 @@
+configs:
+  repositories:
+    argocd-official-repo:
+      name: argo-helm
+      type: helm
+      url: https://argoproj.github.io/argo-helm 
+server:
+  configEnabled: true
+  additionalApplications:
+    - name: cluster-root
+      namespace: argocd
+      destination:
+        namespace: argocd
+        server: https://kubernetes.default.svc
+      project: cluster-root
+      source:
+        path: aws/demo-cluster/standard-k8s-architecture/
+        repoURL: https://github.com/yperxristis/argo-cd.git
+        targetRevision: main
+      syncPolicy:
+        automated:
+          selfHeal: true
+          prune: false
+        syncOptions:
+        - CreateNamespace=true
+  additionalProjects:
+  - name: argocd
+    namespace: argocd
+    additionalLabels: {}
+    additionalAnnotations: {}
+    description: Argocd Project
+    sourceRepos:
+    - '*'
+    destinations:
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+    orphanedResources:
+      warn: false
+  - name: cluster-root
+    namespace: argocd
+    additionalLabels: {}
+    additionalAnnotations: {}
+    description: cluster infrastructure
+    sourceRepos:
+    - '*'
+    destinations:
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+    - namespace: kube-system
+      server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+    orphanedResources:
+      warn: false
+  - name: ska
+    namespace: argocd
+    additionalLabels: {}
+    additionalAnnotations: {}
+    description: cluster infrastructure
+    sourceRepos:
+    - '*'
+    destinations:
+    - namespace: argocd
+      server: https://kubernetes.default.svc
+    - namespace: kube-system
+      server: https://kubernetes.default.svc
+    clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+    orphanedResources:
+      warn: false
